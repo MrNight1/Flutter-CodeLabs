@@ -21,15 +21,33 @@ class ChatScreen extends StatefulWidget {
 }
 
 class ChatScreenState extends State<ChatScreen>{
+  final List<ChatMessage> _messages = <ChatMessage>[];
   final TextEditingController _textController = new TextEditingController(); // TO manage interactions with the textField
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return new Scaffold( //Scaffold := Implements the basic material design visual layout structure.
       appBar: new AppBar( //AppBar:= is a horizontal bar typically shown at the top of an app using the appBar property.
-        title: new Text("FriendlyChat"),
-      ),
-      body: _buildTextComposer(), //tell the app how to display the text input user control
+        title: new Text("FriendlyChat")),
+      body: new Column(
+        children: <Widget>[
+          new Flexible(
+            child: new ListView.builder(
+              padding: new EdgeInsets.all(8.0), // for white space around the message text
+              reverse: true, //to make the ListView start from the bottom of the screen
+              itemBuilder: (_, int index) => _messages[index], //for a function that builds each widget in [index]
+                                                               // _ is a convention to indicate that it wont be used
+              itemCount: _messages.length,
+            ),
+          ),
+          new Divider(height: 1.0), //to draw a horizontal rule between the UI for displaying messages and the text input field for composing messages.
+          new Container(
+            decoration: new BoxDecoration(
+              color: Theme.of(context).cardColor),
+            child: _buildTextComposer(), //tell the app how to display the text input user control
+          ),
+        ],
+      )
     );
   }
 
@@ -62,6 +80,10 @@ class ChatScreenState extends State<ChatScreen>{
 
   void _handleSubmitted(String text) {
     _textController.clear();
+    ChatMessage message = new ChatMessage(text: text,);
+    setState((){ //You call setState()to modify _messages and to let the framework know this part of the widget tree has changed and it needs to rebuild the UI.
+      _messages.insert(0, message);
+    });
   }
 }
 const String _name = "David";
