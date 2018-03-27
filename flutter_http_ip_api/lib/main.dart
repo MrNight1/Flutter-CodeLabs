@@ -11,6 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
+      title: 'IP-API',
       home: new MyHomePage(),
     );
   }
@@ -25,19 +26,21 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var _ipAddress = 'Unknown';
+  var _data;
 
   _getIPAddress() async {
-    var url = 'https://httpbin.org/ip';
+    var url = 'http://ip-api.com/json/';
     var httpClient = new HttpClient();
 
     String result;
+
     try {
       var request = await httpClient.getUrl(Uri.parse(url));
       var response = await request.close();
       if (response.statusCode == HttpStatus.OK) {
         var json = await response.transform(UTF8.decoder).join();
-        var data = JSON.decode(json);
-        result = data['origin'];
+        _data = JSON.decode(json);
+        result = _data['query'];
       } else {
         result =
         'Error getting IP address:\nHttp status ${response.statusCode}';
@@ -58,15 +61,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    //print();
+
     var spacer = new SizedBox(height: 32.0);
 
     return new Scaffold(
+      appBar: new AppBar(title: new Text("IP-API")),
       body: new Center(
         child: new Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             new Text('Your current IP address is:'),
             new Text('$_ipAddress.'),
+            new Text("$_data"),
             spacer,
             new RaisedButton(
               onPressed: _getIPAddress,
